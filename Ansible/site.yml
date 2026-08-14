@@ -1,7 +1,18 @@
 ---
-- name: Prepare Kubernetes nodes
+- name: Configure Kubernetes nodes
   hosts: k8s
   become: true
-
   roles:
     - k8s
+
+- name: Configure Kubernetes control plane
+  hosts: k8s_control
+  become: true
+  roles:
+    - k8s_control_plane
+
+- name: Configure Kubernetes workers
+  hosts: k8s_workers
+  become: true
+  roles:
+    - k8s_worker

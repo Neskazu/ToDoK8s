@@ -1,0 +1,21 @@
+---
+- name: Check if Calico is already installed
+  become_user: vagrant
+  ansible.builtin.command:
+    cmd: kubectl get daemonset calico-node -n kube-system
+  environment:
+    KUBECONFIG: /home/vagrant/.kube/config
+  register: calico_status
+  failed_when: false
+  changed_when: false
+
+- name: Install Calico
+  become_user: vagrant
+  ansible.builtin.command:
+    cmd: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/calico.yaml
+  environment:
+    KUBECONFIG: /home/vagrant/.kube/config
+  register: calico_apply
+  retries: 3
+  delay: 15
+  until: calico_apply.rc == 0

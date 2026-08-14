@@ -1,0 +1,12 @@
+---
+- name: Initialize control plane
+  ansible.builtin.import_tasks: init.yml
+
+- name: Configure kubectl
+  ansible.builtin.import_tasks: kubeconfig.yml
+
+- name: Install Calico
+  ansible.builtin.import_tasks: calico.yml
+
+- name: Generate worker join command
+  ansible.builtin.import_tasks: join.yml

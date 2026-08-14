@@ -1,0 +1,10 @@
+---
+- name: Check if worker is already part of the cluster
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_config
+
+- name: Join worker to Kubernetes cluster
+  ansible.builtin.command:
+    cmd: "{{ hostvars[groups['k8s_control'][0]].kubernetes_join_command }}"
+  when: not kubelet_config.stat.exists

@@ -1,0 +1,10 @@
+---
+- name: Check if control plane is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_initialized
+
+- name: Initialize Kubernetes control plane
+  ansible.builtin.command:
+    cmd: kubeadm init --apiserver-advertise-address=192.168.56.10 --pod-network-cidr=192.168.0.0/16
+  when: not kubeadm_initialized.stat.exists
