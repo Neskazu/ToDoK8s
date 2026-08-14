@@ -1,0 +1,42 @@
+---
+- name: Disable swap immediately
+  ansible.builtin.command:
+    cmd: swapoff -a
+  changed_when: false
+
+- name: Disable swap permanently
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^(\s*[^#].*\s+swap\s+.*)$'
+    replace: '# \1'
+
+- name: Load required kernel module
+  ansible.builtin.modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Configure Kubernetes kernel parameters
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-kubernetes.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      net.bridge.bridge-nf-call-iptables = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward = 1
+
+- name: Apply kernel parameters
+  ansible.builtin.command:
+    cmd: sysctl --system
+  changed_when: false
+
+- name: Install prerequisite packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gpg
+      - apt-transport-https
+    state: present
+    update_cache: true
