@@ -1,0 +1,30 @@
+---
+- name: Create ToDoK8s namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/namespace.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Deploy ToDoK8s backend
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/backend/deployment.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create ToDoK8s backend service
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/backend/service.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Deploy ToDoK8s frontend
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/frontend/deployment.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create ToDoK8s frontend service
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/frontend/service.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf

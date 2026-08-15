@@ -38,5 +38,13 @@
       - curl
       - gpg
       - apt-transport-https
+      - python3-pip
+      - python3-venv
     state: present
     update_cache: true
+    
+- name: Install Kubernetes Python client
+  ansible.builtin.pip:
+    name:
+      - kubernetes
+    state: present

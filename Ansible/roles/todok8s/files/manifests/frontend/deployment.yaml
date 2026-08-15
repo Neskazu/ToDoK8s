@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: todo-frontend
+  namespace: todok8s
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: todo-frontend
+
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+
+    spec:
+      containers:
+        - name: frontend
+          image: nginx:1.27
+
+          ports:
+            - containerPort: 80

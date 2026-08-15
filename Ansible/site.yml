@@ -16,3 +16,9 @@
   become: true
   roles:
     - k8s_worker
+
+- name: Deploy ToDoK8s
+  hosts: k8s_control
+  become: true
+  roles:
+    - todok8s

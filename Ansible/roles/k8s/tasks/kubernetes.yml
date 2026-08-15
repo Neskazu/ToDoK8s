@@ -29,6 +29,16 @@
       - kubectl
     state: present
     update_cache: true
+    
+- name: Configure kubelet node IP
+  ansible.builtin.copy:
+    dest: /etc/default/kubelet
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      KUBELET_EXTRA_ARGS="--node-ip={{ ansible_host }}"
+  notify: Restart kubelet
 
 - name: Hold Kubernetes packages
   ansible.builtin.dpkg_selections:
