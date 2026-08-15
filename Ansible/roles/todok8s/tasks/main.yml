@@ -28,3 +28,12 @@
     state: present
     definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/frontend/service.yaml') | from_yaml }}"
     kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Install ingress controller
+  ansible.builtin.import_tasks: ingress.yml
+
+- name: Create ToDoK8s ingress
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/ingress.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf

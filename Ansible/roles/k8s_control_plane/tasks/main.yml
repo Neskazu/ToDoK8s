@@ -10,3 +10,6 @@
 
 - name: Generate worker join command
   ansible.builtin.import_tasks: join.yml
+
+- name: Install Helm
+  ansible.builtin.import_tasks: helm.yml
