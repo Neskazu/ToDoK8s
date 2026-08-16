@@ -18,9 +18,16 @@ spec:
         app: todo-frontend
 
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
       containers:
         - name: frontend
-          image: nginx:1.27
+          image: ghcr.io/neskazu/todok8s-frontend:1.0
 
           ports:
-            - containerPort: 80
+            - containerPort: 8080
+
+          env:
+            - name: API_BASE_URL
+              value: /api

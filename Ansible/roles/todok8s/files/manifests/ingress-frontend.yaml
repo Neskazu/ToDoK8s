@@ -1,13 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-
 metadata:
-  name: todok8s
+  name: todok8s-frontend
   namespace: todok8s
-
 spec:
   ingressClassName: nginx
-
   rules:
     - http:
         paths:

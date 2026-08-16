@@ -4,6 +4,67 @@
     state: present
     definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/namespace.yaml') | from_yaml }}"
     kubeconfig: /etc/kubernetes/admin.conf
+    
+- name: Create GHCR pull secret
+  kubernetes.core.k8s:
+    state: present
+    namespace: todok8s
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: ghcr-secret
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: >-
+          {{
+            {
+              "auths": {
+                "ghcr.io": {
+                  "username": ghcr_username,
+                  "password": ghcr_token,
+                  "auth": (ghcr_username + ":" + ghcr_token) | b64encode
+                }
+              }
+            } | to_json | b64encode
+          }}
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create ToDoK8s ConfigMap
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/configmap.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create ToDoK8s database Secret
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.template', role_path + '/files/manifests/secret.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create PostgreSQL PV
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/postgres/pv.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create PostgreSQL PVC
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/postgres/pvc.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Deploy PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/postgres/deployment.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create PostgreSQL Service
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/postgres/service.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
 
 - name: Deploy ToDoK8s backend
   kubernetes.core.k8s:
@@ -32,8 +93,14 @@
 - name: Install ingress controller
   ansible.builtin.import_tasks: ingress.yml
 
-- name: Create ToDoK8s ingress
+- name: Create ToDoK8s frontend ingress
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/ingress.yaml') | from_yaml }}"
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/ingress-frontend.yaml') | from_yaml }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Create ToDoK8s backend ingress
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.file', role_path + '/files/manifests/ingress-backend.yaml') | from_yaml }}"
     kubeconfig: /etc/kubernetes/admin.conf

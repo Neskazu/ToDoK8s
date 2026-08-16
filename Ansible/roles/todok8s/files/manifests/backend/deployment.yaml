@@ -18,9 +18,19 @@ spec:
         app: todo-backend
 
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
       containers:
         - name: backend
-          image: nginx:1.27
+          image: ghcr.io/neskazu/todok8s-backend:1.0
 
           ports:
-            - containerPort: 80
+            - containerPort: 8000
+
+          envFrom:
+            - configMapRef:
+                name: todok8s-config
+
+            - secretRef:
+                name: todok8s-db-secret

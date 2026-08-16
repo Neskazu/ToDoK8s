@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: todok8s-postgres-pv
+
+spec:
+  capacity:
+    storage: 1Gi
+
+  accessModes:
+    - ReadWriteOnce
+
+  persistentVolumeReclaimPolicy: Retain
+
+  storageClassName: manual
+
+  hostPath:
+    path: /var/lib/todok8s-postgres
